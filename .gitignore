@@ -6,6 +6,7 @@ node_modules/
 dist/
 .vscode/
 .idea/
+.claude/
 
 # Variables de entorno
 .env
