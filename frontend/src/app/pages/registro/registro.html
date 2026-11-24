@@ -1,28 +1,59 @@
-<div class="contenedor">
-  <div class="tarjeta">
-    <h2>Crear cuenta</h2>
-    <p class="subtitulo">Reseñas de Restaurantes</p>
+<div class="auth">
+  <aside class="auth-lado">
+    <div class="marca">🍽️ Mis Reseñas</div>
+    <h1>Crea tu cuenta y empieza a reseñar</h1>
+    <p>En menos de un minuto tendrás tu propio espacio para guardar la opinión de cada restaurante que visites.</p>
+    <ul>
+      <li>✍️ Escribe observaciones de cada visita</li>
+      <li>🔎 Busca y filtra tus reseñas</li>
+      <li>🔒 Nadie más puede ver tus reseñas</li>
+    </ul>
+  </aside>
 
-    <form (ngSubmit)="registrar()">
-      <label for="nombre">Nombre</label>
-      <input id="nombre" type="text" name="nombre" [(ngModel)]="nombre" />
+  <main class="auth-form">
+    <div class="auth-caja">
+      <h2>Crear cuenta</h2>
+      <p class="texto-suave">Completa tus datos para registrarte.</p>
 
-      <label for="correo">Correo</label>
-      <input id="correo" type="email" name="correo" [(ngModel)]="correo" placeholder="correo@ejemplo.com" />
+      <form (ngSubmit)="registrar()" novalidate>
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" type="text" name="nombre" [(ngModel)]="nombre" placeholder="Tu nombre" autocomplete="name" />
+        </div>
 
-      <label for="password">Contraseña</label>
-      <input id="password" type="password" name="password" [(ngModel)]="password" />
+        <div class="campo">
+          <label for="correo">Correo electrónico</label>
+          <input id="correo" type="email" name="correo" [(ngModel)]="correo" placeholder="tucorreo@ejemplo.com" autocomplete="email" />
+        </div>
 
-      @if (error) {
-        <p class="error">{{ error }}</p>
-      }
-      @if (exito) {
-        <p class="exito">{{ exito }}</p>
-      }
+        <div class="campo">
+          <label for="password">Contraseña</label>
+          <div class="input-con-boton">
+            <input id="password" [type]="verPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+            <button type="button" class="btn-link" (click)="verPassword = !verPassword">
+              {{ verPassword ? 'Ocultar' : 'Mostrar' }}
+            </button>
+          </div>
+        </div>
 
-      <button type="submit" class="btn">Registrarse</button>
-    </form>
+        <div class="campo">
+          <label for="confirmar">Confirmar contraseña</label>
+          <input id="confirmar" [type]="verPassword ? 'text' : 'password'" name="confirmar" [(ngModel)]="confirmar" placeholder="Repite la contraseña" autocomplete="new-password" />
+        </div>
 
-    <p class="enlace">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
-  </div>
+        @if (error) {
+          <div class="alerta alerta-error">{{ error }}</div>
+        }
+        @if (exito) {
+          <div class="alerta alerta-exito">{{ exito }}</div>
+        }
+
+        <button type="submit" class="btn btn-primario btn-bloque" [disabled]="cargando || !!exito">
+          {{ cargando ? 'Creando cuenta...' : 'Registrarme' }}
+        </button>
+      </form>
+
+      <p class="auth-pie">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+    </div>
+  </main>
 </div>

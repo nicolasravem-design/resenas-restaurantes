@@ -1,91 +1,230 @@
-<header class="barra">
-  <h1>Mis reseñas de restaurantes</h1>
-  <div>
-    <span>Hola, {{ nombreUsuario }}</span>
-    <button class="btn btn-secundario" (click)="cerrarSesion()">Cerrar sesión</button>
+<!-- Barra superior -->
+<header class="navbar">
+  <div class="marca">🍽️ Mis Reseñas</div>
+  <div class="usuario">
+    <span class="avatar">{{ inicial() }}</span>
+    <span class="nombre-usuario">{{ nombreUsuario }}</span>
+    <button class="btn btn-claro btn-pequeno" (click)="cerrarSesion()">Cerrar sesión</button>
   </div>
 </header>
 
 <main class="pagina">
-  <!-- Formulario para crear / editar -->
-  <section class="tarjeta">
-    <h2>{{ idEditando ? 'Editar reseña' : 'Nueva reseña' }}</h2>
-
-    <form (ngSubmit)="guardar()" class="formulario">
-      <div>
-        <label for="nombreRestaurante">Nombre del restaurante</label>
-        <input id="nombreRestaurante" type="text" name="nombreRestaurante" [(ngModel)]="resena.nombreRestaurante" />
-      </div>
-
-      <div>
-        <label for="calificacion">Calificación</label>
-        <select id="calificacion" name="calificacion" [(ngModel)]="resena.calificacion">
-          @for (n of [1, 2, 3, 4, 5]; track n) {
-            <option [ngValue]="n">{{ n }} - {{ estrellas(n) }}</option>
-          }
-        </select>
-      </div>
-
-      <div>
-        <label for="fechaVisita">Fecha de visita</label>
-        <input id="fechaVisita" type="date" name="fechaVisita" [(ngModel)]="resena.fechaVisita" />
-      </div>
-
-      <div class="completo">
-        <label for="observaciones">Observaciones</label>
-        <textarea id="observaciones" name="observaciones" rows="3" [(ngModel)]="resena.observaciones"></textarea>
-      </div>
-
-      <div class="completo acciones">
-        <button type="submit" class="btn">{{ idEditando ? 'Actualizar' : 'Guardar' }}</button>
-        @if (idEditando) {
-          <button type="button" class="btn btn-secundario" (click)="cancelar()">Cancelar</button>
-        }
-      </div>
-    </form>
-
-    @if (mensaje) {
-      <p class="exito">{{ mensaje }}</p>
-    }
-    @if (error) {
-      <p class="error">{{ error }}</p>
-    }
+  <!-- Encabezado -->
+  <section class="encabezado">
+    <div>
+      <h1>Hola, {{ nombreUsuario }} 👋</h1>
+      <p class="texto-suave">Aquí están todas tus reseñas de restaurantes.</p>
+    </div>
+    <button class="btn btn-primario" (click)="nuevaResena()">+ Nueva reseña</button>
   </section>
+
+  <!-- Estadisticas -->
+  <section class="estadisticas">
+    <div class="stat">
+      <span class="stat-icono">📝</span>
+      <div>
+        <p class="stat-titulo">Total de reseñas</p>
+        <p class="stat-valor">{{ resenas.length }}</p>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat-icono">⭐</span>
+      <div>
+        <p class="stat-titulo">Calificación promedio</p>
+        <p class="stat-valor">{{ resenas.length ? (promedio | number: '1.1-1') : '-' }}</p>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat-icono">🏆</span>
+      <div>
+        <p class="stat-titulo">Mejor calificado</p>
+        <p class="stat-valor stat-texto">{{ favorito?.nombreRestaurante || '-' }}</p>
+      </div>
+    </div>
+    <div class="stat">
+      <span class="stat-icono">📅</span>
+      <div>
+        <p class="stat-titulo">Última visita</p>
+        <p class="stat-valor stat-texto">
+          {{ ultimaVisita ? (ultimaVisita.fechaVisita | date: 'd MMM y' : 'UTC') : '-' }}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Busqueda y filtros -->
+  @if (resenas.length > 0) {
+    <section class="filtros">
+      <input
+        class="buscador"
+        type="search"
+        name="busqueda"
+        [(ngModel)]="busqueda"
+        placeholder="🔍 Buscar por restaurante u observación..."
+      />
+      <select name="filtroCalificacion" [(ngModel)]="filtroCalificacion" aria-label="Filtrar por calificación">
+        <option [ngValue]="0">Todas las calificaciones</option>
+        <option [ngValue]="5">★★★★★ (5)</option>
+        <option [ngValue]="4">★★★★ (4)</option>
+        <option [ngValue]="3">★★★ (3)</option>
+        <option [ngValue]="2">★★ (2)</option>
+        <option [ngValue]="1">★ (1)</option>
+      </select>
+      <select name="orden" [(ngModel)]="orden" aria-label="Ordenar">
+        <option value="recientes">Más recientes</option>
+        <option value="antiguas">Más antiguas</option>
+        <option value="mejores">Mejor calificadas</option>
+        <option value="peores">Peor calificadas</option>
+        <option value="nombre">Nombre (A - Z)</option>
+      </select>
+    </section>
+  }
 
   <!-- Listado -->
-  <section class="tarjeta">
-    <h2>Listado ({{ resenas.length }})</h2>
-
-    @if (resenas.length === 0) {
-      <p>Aún no tienes reseñas registradas.</p>
-    } @else {
-      <div class="tabla-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Restaurante</th>
-              <th>Calificación</th>
-              <th>Fecha de visita</th>
-              <th>Observaciones</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (r of resenas; track r._id) {
-              <tr>
-                <td>{{ r.nombreRestaurante }}</td>
-                <td class="estrellas">{{ estrellas(r.calificacion) }}</td>
-                <td>{{ r.fechaVisita | date: 'dd/MM/yyyy' : 'UTC' }}</td>
-                <td>{{ r.observaciones }}</td>
-                <td class="acciones">
-                  <button class="btn btn-pequeno" (click)="editar(r)">Editar</button>
-                  <button class="btn btn-pequeno btn-peligro" (click)="eliminar(r)">Eliminar</button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+  @if (cargando && resenas.length === 0) {
+    <div class="vacio">
+      <div class="spinner"></div>
+      <p class="texto-suave">Cargando tus reseñas...</p>
+    </div>
+  } @else if (resenas.length === 0) {
+    <div class="vacio">
+      <span class="vacio-icono">🍽️</span>
+      <h3>Aún no tienes reseñas</h3>
+      <p class="texto-suave">Cuéntanos cómo te fue en el último restaurante que visitaste.</p>
+      <button class="btn btn-primario" (click)="nuevaResena()">Escribir mi primera reseña</button>
+    </div>
+  } @else if (resenasFiltradas.length === 0) {
+    <div class="vacio">
+      <span class="vacio-icono">🔎</span>
+      <h3>No hay resultados</h3>
+      <p class="texto-suave">Ninguna reseña coincide con la búsqueda o el filtro.</p>
+      <button class="btn btn-claro" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+  } @else {
+    @if (hayFiltros()) {
+      <p class="texto-suave resultados">Mostrando {{ resenasFiltradas.length }} de {{ resenas.length }} reseñas</p>
     }
-  </section>
+    <section class="grilla">
+      @for (r of resenasFiltradas; track r._id) {
+        <article class="tarjeta-resena">
+          <div class="tarjeta-cabecera">
+            <h3>{{ r.nombreRestaurante }}</h3>
+            <span class="nota">{{ r.calificacion }}.0</span>
+          </div>
+          <app-estrellas [valor]="r.calificacion" />
+          <p class="fecha">📅 Visitado el {{ r.fechaVisita | date: "d 'de' MMMM 'de' y" : 'UTC' }}</p>
+          <p class="observaciones" [class.sin-texto]="!r.observaciones">
+            {{ r.observaciones || 'Sin observaciones.' }}
+          </p>
+          <div class="tarjeta-acciones">
+            <button class="btn btn-claro btn-pequeno" (click)="editar(r)">✏️ Editar</button>
+            <button class="btn btn-peligro-claro btn-pequeno" (click)="pedirEliminar(r)">🗑️ Eliminar</button>
+          </div>
+        </article>
+      }
+    </section>
+  }
 </main>
+
+<!-- Modal: crear / editar -->
+@if (mostrarFormulario) {
+  <div class="modal-fondo" (click)="cerrarFormulario()">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="titulo-modal">
+      <div class="modal-cabecera">
+        <h2 id="titulo-modal">{{ idEditando ? 'Editar reseña' : 'Nueva reseña' }}</h2>
+        <button type="button" class="cerrar" (click)="cerrarFormulario()" aria-label="Cerrar">✕</button>
+      </div>
+
+      <form (ngSubmit)="guardar()" novalidate>
+        <div class="campo">
+          <label for="nombreRestaurante">Nombre del restaurante *</label>
+          <input
+            id="nombreRestaurante"
+            type="text"
+            name="nombreRestaurante"
+            maxlength="100"
+            [(ngModel)]="resena.nombreRestaurante"
+            [class.invalido]="errorCampo('nombre')"
+            placeholder="Ej: La Brasa Roja"
+          />
+          @if (errorCampo('nombre')) {
+            <small class="error-campo">{{ errorCampo('nombre') }}</small>
+          }
+        </div>
+
+        <div class="campo">
+          <label>Calificación *</label>
+          <app-estrellas [valor]="resena.calificacion" [editable]="true" (valorChange)="resena.calificacion = $event" />
+          @if (errorCampo('calificacion')) {
+            <small class="error-campo">{{ errorCampo('calificacion') }}</small>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="fechaVisita">Fecha de visita *</label>
+          <input
+            id="fechaVisita"
+            type="date"
+            name="fechaVisita"
+            [max]="hoy"
+            [(ngModel)]="resena.fechaVisita"
+            [class.invalido]="errorCampo('fecha')"
+          />
+          @if (errorCampo('fecha')) {
+            <small class="error-campo">{{ errorCampo('fecha') }}</small>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="observaciones">Observaciones</label>
+          <textarea
+            id="observaciones"
+            name="observaciones"
+            rows="4"
+            maxlength="500"
+            [(ngModel)]="resena.observaciones"
+            placeholder="¿Qué pediste? ¿Cómo estuvo la atención?"
+          ></textarea>
+          <small class="contador">{{ resena.observaciones.length }}/500</small>
+        </div>
+
+        @if (errorFormulario) {
+          <div class="alerta alerta-error">{{ errorFormulario }}</div>
+        }
+
+        <div class="modal-acciones">
+          <button type="button" class="btn btn-claro" (click)="cerrarFormulario()" [disabled]="guardando">Cancelar</button>
+          <button type="submit" class="btn btn-primario" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : idEditando ? 'Guardar cambios' : 'Crear reseña' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Modal: confirmar eliminacion -->
+@if (resenaAEliminar) {
+  <div class="modal-fondo" (click)="cancelarEliminar()">
+    <div class="modal modal-pequeno" (click)="$event.stopPropagation()" role="alertdialog" aria-modal="true">
+      <span class="vacio-icono">🗑️</span>
+      <h2>¿Eliminar reseña?</h2>
+      <p class="texto-suave">
+        Se eliminará la reseña de <strong>{{ resenaAEliminar.nombreRestaurante }}</strong>. Esta acción no se puede deshacer.
+      </p>
+      <div class="modal-acciones centrado">
+        <button class="btn btn-claro" (click)="cancelarEliminar()" [disabled]="eliminando">Cancelar</button>
+        <button class="btn btn-peligro" (click)="confirmarEliminar()" [disabled]="eliminando">
+          {{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Toast -->
+@if (toast) {
+  <div class="toast" [class.toast-error]="toastError" role="status">
+    {{ toastError ? '⚠️' : '✅' }} {{ toast }}
+  </div>
+}

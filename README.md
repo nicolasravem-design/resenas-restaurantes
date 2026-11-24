@@ -71,6 +71,23 @@ Abrir `http://localhost:4200`, crear una cuenta en **Regístrate**, iniciar sesi
 
 El token se envía en el header `Authorization: Bearer <token>`.
 
+## Funcionalidades del frontend
+
+- Login y registro (con confirmación de contraseña y botón para mostrar/ocultar la contraseña).
+- El token se guarda en el **sessionStorage** y un interceptor lo envía en cada petición.
+- Un guard protege la ruta `/resenas`: si no hay sesión redirige al login. Si el token expira se cierra la sesión.
+- Panel con estadísticas: total de reseñas, calificación promedio, mejor calificado y última visita.
+- Búsqueda por texto, filtro por calificación y ordenamiento (recientes, antiguas, mejores, peores, nombre).
+- Crear y editar reseñas en un modal con calificación por estrellas y validaciones (no se permiten fechas futuras).
+- Confirmación antes de eliminar y mensajes de éxito/error.
+- Diseño responsive (se adapta a celular).
+
+## Validaciones del backend
+
+- Registro: correo válido, contraseña de mínimo 6 caracteres y correo no repetido.
+- Reseñas: nombre obligatorio, calificación entera de 1 a 5, fecha válida y no futura, observaciones de máximo 500 caracteres.
+- Respuestas en JSON para rutas inexistentes (404) y para un body mal formado (400).
+
 ## Seguridad: cada usuario solo ve sus reseñas
 
 - Al iniciar sesión el backend genera un **JWT** con el id del usuario y el frontend lo guarda en el **sessionStorage**.

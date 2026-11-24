@@ -1,0 +1,19 @@
+<div class="estrellas" [class.editable]="editable" (mouseleave)="hover = 0">
+  @for (n of numeros; track n) {
+    @if (editable) {
+      <button
+        type="button"
+        class="estrella"
+        [class.activa]="activa(n)"
+        (click)="seleccionar(n)"
+        (mouseenter)="hover = n"
+        [attr.aria-label]="n + ' de 5 estrellas'"
+      >★</button>
+    } @else {
+      <span class="estrella" [class.activa]="activa(n)">★</span>
+    }
+  }
+  @if (editable) {
+    <span class="texto">{{ textos[hover || valor] }}</span>
+  }
+</div>

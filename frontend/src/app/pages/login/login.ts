@@ -6,12 +6,12 @@ import { AuthService } from '../../services/auth';
 @Component({
   selector: 'app-login',
   imports: [FormsModule, RouterLink],
-  templateUrl: './login.html',
-  styleUrl: './login.css'
+  templateUrl: './login.html'
 })
 export class Login {
   correo = '';
   password = '';
+  verPassword = false;
   error = '';
   cargando = false;
 
@@ -24,13 +24,13 @@ export class Login {
 
   iniciarSesion() {
     this.error = '';
-    if (!this.correo || !this.password) {
-      this.error = 'Ingrese correo y contraseña';
+    if (!this.correo.trim() || !this.password) {
+      this.error = 'Ingresa tu correo y tu contraseña';
       return;
     }
 
     this.cargando = true;
-    this.authService.login(this.correo, this.password).subscribe({
+    this.authService.login(this.correo.trim(), this.password).subscribe({
       next: () => {
         this.cargando = false;
         this.router.navigate(['/resenas']);
