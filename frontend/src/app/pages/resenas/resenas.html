@@ -1,0 +1,91 @@
+<header class="barra">
+  <h1>Mis reseñas de restaurantes</h1>
+  <div>
+    <span>Hola, {{ nombreUsuario }}</span>
+    <button class="btn btn-secundario" (click)="cerrarSesion()">Cerrar sesión</button>
+  </div>
+</header>
+
+<main class="pagina">
+  <!-- Formulario para crear / editar -->
+  <section class="tarjeta">
+    <h2>{{ idEditando ? 'Editar reseña' : 'Nueva reseña' }}</h2>
+
+    <form (ngSubmit)="guardar()" class="formulario">
+      <div>
+        <label for="nombreRestaurante">Nombre del restaurante</label>
+        <input id="nombreRestaurante" type="text" name="nombreRestaurante" [(ngModel)]="resena.nombreRestaurante" />
+      </div>
+
+      <div>
+        <label for="calificacion">Calificación</label>
+        <select id="calificacion" name="calificacion" [(ngModel)]="resena.calificacion">
+          @for (n of [1, 2, 3, 4, 5]; track n) {
+            <option [ngValue]="n">{{ n }} - {{ estrellas(n) }}</option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label for="fechaVisita">Fecha de visita</label>
+        <input id="fechaVisita" type="date" name="fechaVisita" [(ngModel)]="resena.fechaVisita" />
+      </div>
+
+      <div class="completo">
+        <label for="observaciones">Observaciones</label>
+        <textarea id="observaciones" name="observaciones" rows="3" [(ngModel)]="resena.observaciones"></textarea>
+      </div>
+
+      <div class="completo acciones">
+        <button type="submit" class="btn">{{ idEditando ? 'Actualizar' : 'Guardar' }}</button>
+        @if (idEditando) {
+          <button type="button" class="btn btn-secundario" (click)="cancelar()">Cancelar</button>
+        }
+      </div>
+    </form>
+
+    @if (mensaje) {
+      <p class="exito">{{ mensaje }}</p>
+    }
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
+  </section>
+
+  <!-- Listado -->
+  <section class="tarjeta">
+    <h2>Listado ({{ resenas.length }})</h2>
+
+    @if (resenas.length === 0) {
+      <p>Aún no tienes reseñas registradas.</p>
+    } @else {
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Restaurante</th>
+              <th>Calificación</th>
+              <th>Fecha de visita</th>
+              <th>Observaciones</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of resenas; track r._id) {
+              <tr>
+                <td>{{ r.nombreRestaurante }}</td>
+                <td class="estrellas">{{ estrellas(r.calificacion) }}</td>
+                <td>{{ r.fechaVisita | date: 'dd/MM/yyyy' : 'UTC' }}</td>
+                <td>{{ r.observaciones }}</td>
+                <td class="acciones">
+                  <button class="btn btn-pequeno" (click)="editar(r)">Editar</button>
+                  <button class="btn btn-pequeno btn-peligro" (click)="eliminar(r)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</main>

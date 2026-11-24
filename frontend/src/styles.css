@@ -1,0 +1,91 @@
+/* Estilos globales */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f1ec;
+  color: #333;
+}
+.contenedor {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.contenedor .tarjeta {
+  width: 100%;
+  max-width: 380px;
+}
+.tarjeta {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+.tarjeta h2 {
+  margin-top: 0;
+  color: #b23a2f;
+}
+.subtitulo {
+  margin-top: -10px;
+  color: #777;
+}
+label {
+  display: block;
+  margin: 10px 0 4px;
+  font-weight: bold;
+  font-size: 14px;
+}
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.btn {
+  background: #b23a2f;
+  color: white;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 12px;
+  font-size: 14px;
+}
+.btn:hover {
+  opacity: 0.9;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.btn-secundario {
+  background: #555;
+  margin-top: 0;
+}
+.btn-pequeno {
+  padding: 5px 10px;
+  margin-top: 0;
+  font-size: 13px;
+}
+.btn-peligro {
+  background: #c0392b;
+}
+.error {
+  color: #c0392b;
+}
+.exito {
+  color: #27ae60;
+}
+.enlace {
+  margin-top: 16px;
+  font-size: 14px;
+}
